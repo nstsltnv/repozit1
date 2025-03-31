@@ -1,44 +1,112 @@
 #include <iostream>
-#include "product.cpp"
-#include "warehouse.cpp"
 
-using namespace std;
+#include "polynomial.h"
+#include "vect_polynomial.h"
+
+#include "polynomial.cpp"
+#include "vect_polynomial.cpp"
+
+
+void defaultFilling(VectPolynomial &v);
+int my_rand();
+
+int DEFAULT_VECTOR_SIZE = 5;
+int DEFAULT_POLYMIAL_SIZE = 5;
 
 int main()
 {
-    int n, opt;
-    input_max_products(n);
-    Warehouse w_c(1, CENTER, 50, 55, 100, n);
-    Warehouse w_w(2, WEST, 70, 90, 150, n);
-    Warehouse w_e(3, EAST, 90, 68, 50, n);
-    Warehouse list[3] = {w_c, w_w, w_e};
+    VectPolynomial v1(DEFAULT_VECTOR_SIZE);
+    VectPolynomial v2(DEFAULT_VECTOR_SIZE);
+    VectPolynomial v(DEFAULT_VECTOR_SIZE);
 
-    do{
-        menu(opt);
+    defaultFilling(v1);
+    defaultFilling(v2);
 
-        switch (opt)
+    int opt;
+    Polynomial p;
+
+    for (int i = 0; i < DEFAULT_VECTOR_SIZE - DEFAULT_VECTOR_SIZE % 2; i++)
+    {
+        if (i % 2 == 0)
         {
-            case 1:
-                insert_new_product(list);
-                break;
-            case 2:
-                print_list(list);
-                break;
-            case 3:
-                search_product(list);
-                break;
-            case 4:
-                delete_product(list);
-                break;
-            case 5:
-                cout<< "Exit from programm!" <<endl;
-                break;
-            default:
-                cout<< "Invalid option!" <<endl;
+            cout << "What u do with " << i + 1 << "'s element first vector and " << i + 2 << "'s second vector?" << endl;
+            cout << "1: sum" << endl << "2: diffenets" << endl;
+            do
+            {
+                cin >> opt;
+            }
+            while (opt != 1 && opt != 2);
+            p = (opt == 1) ? sum(v1.get_list()[i], v2.get_list()[i + 1]): dif(v1.get_list()[i], v2.get_list()[i + 1]);
+            v.set_polymial(p, i);
         }
-    } while (opt != 5);
+        else
+        {
+            cout << "What u do with " << i + 1 << "'s element first vector and " << i << "'s second vector?" << endl;
+            cout << "1: sum" << endl << "2: diffenets" << endl;
+            do
+            {
+                cin >> opt;
+            }
+            while (opt != 1 && opt != 2);
+            p = (opt == 1) ? sum(v1.get_list()[i], v2.get_list()[i - 1]): dif(v1.get_list()[i], v2.get_list()[i - 1]);
+            v.set_polymial(p, i);
+        }
+    }
+    Polynomial *pp = new Polynomial();
+    delete pp;
+    cout << "Your final vector:" << endl;
+    v.print();
+    cout << "and results of vector:" << endl;
+    for (int i = 0; i < DEFAULT_VECTOR_SIZE - DEFAULT_VECTOR_SIZE % 2; i++)
+    {
+        cout << i+1 << ": " << val(v.get_list()[i]) << endl;
+    }
+    
+}
 
-    cout<< "Programm is over!" <<endl;
+void defaultFilling(VectPolynomial &v) // For two func's not want craete new files
+{
+    Polynomial p(1, DEFAULT_POLYMIAL_SIZE);
 
-    return 0;
+
+    double a[DEFAULT_POLYMIAL_SIZE] = {0., 0., 0.};
+
+    for (int i = 0; i < DEFAULT_VECTOR_SIZE - 1; i++)
+    {
+        for (int j = 0; j < DEFAULT_POLYMIAL_SIZE; j++)
+        {
+            a[j] = (double)(my_rand() % 10);
+        }
+        p.set_coef(a, DEFAULT_POLYMIAL_SIZE);
+        p.set_x(1 + my_rand() % 9);
+        v.set_polymial(p, i);     
+    }
+}
+
+int my_rand()
+{
+    int a[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    int random;
+    for (int i = 0; i < 9; i++)
+    {
+        for(;;)
+        {
+            bool good = true;
+            random = 1 + rand() % 9;
+            for (int j = 0; j < 9; j++)
+            {
+                if (random == a[j])
+                { 
+                    good = false; 
+                    break; 
+                }
+            }
+            if (good == false) 
+            {
+                break;
+            }
+        }
+        a[i] = random;
+    }
+    return random;
 }
